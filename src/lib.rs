@@ -2,6 +2,8 @@ use std::sync::{PoisonError, RwLockReadGuard, RwLockWriteGuard};
 
 use derive_more::Display;
 
+pub type Result<T> = std::result::Result<T, Error>;
+
 #[allow(non_camel_case_types)]
 #[repr(C)]
 #[derive(Debug, Display, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
