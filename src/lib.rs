@@ -1,3 +1,5 @@
+use std::sync::{PoisonError, RwLockReadGuard, RwLockWriteGuard};
+
 use derive_more::Display;
 
 #[allow(non_camel_case_types)]
@@ -29,24 +31,27 @@ impl Error {
     }
 }
 
-// impl<T> From<PoisonError<RwLockReadGuard<'static, T>>> for Error {
-//     fn from(_: PoisonError<RwLockReadGuard<'static, T>>) -> Self {
-//         Self::new(
-//             ErrorCode::unable_to_grab_lock,
-//             Some(
-//                 "Something went wrong while trying to grab an immutable copy of a lock.",
-//             ),
-//         )
-//     }
-// }
-// impl From<PoisonError<RwLockWriteGuard<'static, State>>> for Error {
-//     fn from(_: PoisonError<RwLockWriteGuard<'static, State>>) -> Self {
-//         Self::new(
-//             ErrorCode::unable_to_grab_lock,
-//             Some("Something went wrong while trying to grab a mutable copy of the `STATE` lock."),
-//         )
-//     }
-// }
+impl<T> From<PoisonError<RwLockReadGuard<'static, T>>> for Error {
+    fn from(_: PoisonError<RwLockReadGuard<'static, T>>) -> Self {
+        Self::new(
+            ErrorCode::unable_to_grab_lock,
+            Some(
+                "Something went wrong while trying to grab an immutable copy of the requested lock.",
+            ),
+        )
+    }
+}
+
+impl<T> From<PoisonError<RwLockWriteGuard<'static, T>>> for Error {
+    fn from(_: PoisonError<RwLockWriteGuard<'static, T>>) -> Self {
+        Self::new(
+            ErrorCode::unable_to_grab_lock,
+            Some(
+                "Something went wrong while trying to grab a mutable copy of the requested lock.",
+            ),
+        )
+    }
+}
 
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
